@@ -3,7 +3,6 @@
         <div class="text-2xl">Group-Name: {{ groupId }}</div>
         <button class="w-40 h-40 bg-white rounded-3xl text-black flex items-center justify-center"
             v-if="!showLinks" @click="findSantas">Find santas</button>
-        <div>Santas: {{ santas }}</div>
         <button class="bg-green-500 rounded-xl p-4" v-if="santasFound && !showLinks" @click="createGroup">Create Group</button>
         <div v-if="showLinks">
             <NuxtLink v-for="link in generatedLinks" :to="link" class="block mb-2">{{link}}</NuxtLink>
