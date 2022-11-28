@@ -7,7 +7,8 @@ const createSanta = (name: string , excludedPresentees: Array<string>): Santa =>
         name,
         id: name.toLowerCase().replace(/\s/g, ""),
         excludedPresentees,
-        presenteeId: ''
+        possiblePresentees: [],
+        chosenPresenteeId: ''
     }
 }
 
