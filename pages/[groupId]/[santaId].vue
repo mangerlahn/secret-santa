@@ -1,5 +1,5 @@
 <template>
-    <div class="h-[calc(100svh)] w-screen flex flex-col items-center bg-black text-white">
+    <div class="h-[calc(100dvh)] w-screen flex flex-col items-center bg-black text-white">
         <div
             class="w-4/5 h-60 rounded-xl drop-shadow-lg absolute bottom-40 bg-gray-200 z-10 p-8 text-xl text-center text-black">
             <p>Hallo {{ santaName }},</p>
