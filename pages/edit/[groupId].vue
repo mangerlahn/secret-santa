@@ -44,7 +44,8 @@
                 <header class="text-lg font-bold">{{ key }}</header>
                 <div class="flex gap-4 justify-between items-center">
                     <div>{{ link }}</div>
-                    <button class="w-10 h-10 bg-green-600 rounded-full" @click="() => shareLink(key, link)">🖹</button>
+                    <button class="w-10 h-10 bg-gray-500 text-xl rounded-full"
+                        @click="() => shareLink(key, link)">✉️</button>
                 </div>
             </div>
         </div>
@@ -136,10 +137,9 @@ const removeSanta = (id: string) => {
 }
 
 const shareLink = async (name: string, url: string) => {
-    // TODO check links
     try {
         await navigator.share({
-            title: 'Dein Wichtel-Partner',
+            title: 'Wichteln',
             text: 'Klicke auf den Link und erfahre für wen du dieses Jahr wichtelst',
             url,
         })
