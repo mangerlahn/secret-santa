@@ -1,10 +1,12 @@
 <template>
     <div class="h-screen w-screen flex flex-col items-center bg-black text-white">
-        <div class="w-4/5 h-60 rounded-xl drop-shadow-lg absolute bottom-40 bg-gray-200 z-10 p-8 text-xl text-center text-black">
-                <p>Hallo {{name}},</p>
-                <p>Du bist dieses Jahr der Wichtel für</p>
-                <strong>{{presentee}}</strong>
-                <p>Viel Spaß beim Geschenk suchen!</p>
+        <div
+            class="w-4/5 h-60 rounded-xl drop-shadow-lg absolute bottom-40 bg-gray-200 z-10 p-8 text-xl text-center text-black">
+            <p>Hallo {{ santaName }},</p>
+            <p></p>
+            <p>Du darfst dieses Jahr ein Geschenk für folgende Person besorgen:</p>
+            <strong>{{ presentee }}</strong>
+            <p>Viel Spaß beim Wichteln!</p>
         </div>
         <div class="canvas">
             <div class="snowing">
@@ -142,9 +144,14 @@ import serverConfig from "@/server-config";
 const route = useRoute()
 const presentee = ref('')
 const groupId = ref(route.params.groupId)
-const name = ref(route.params.santaId)
+const santaId = ref(route.params.santaId)
+const santaName = ref('')
 
-fetch(`${serverConfig.serverURL}/${groupId.value}/${name.value}`).then(async res => presentee.value = await res.json())
+fetch(`${serverConfig.serverURL}/${groupId.value}/${santaId.value}`).then(async res => {
+    const { name, presenteeName } = await res.json()
+    presentee.value = presenteeName
+    santaName.value = name
+})
 
 </script>
 
@@ -1093,7 +1100,4 @@ fetch(`${serverConfig.serverURL}/${groupId.value}/${name.value}`).then(async res
         transform: rotate(180deg);
     }
 }
-
-
-
 </style>

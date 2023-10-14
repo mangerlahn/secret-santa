@@ -47,10 +47,13 @@ export class SantaFinder {
     getRandomSantas() {
         this.chooseRandomCycle()
 
-        const santas: { [key: string]: string } = {}
+        const santas: { [key: string]: { name: string, presenteeName: string } } = {}
         this.getSantaIds().forEach(santaId => {
             const presenteeId = this.getSantaById(santaId).chosenPresenteeId
-            santas[this.getSantaById(santaId).name] = this.getSantaById(presenteeId).name
+            santas[santaId] = {
+                name: this.getSantaById(presenteeId).name,
+                presenteeName: this.getSantaById(santaId).name
+            }
         })
         return santas
     }
@@ -99,12 +102,6 @@ export class SantaFinder {
         return this.santas[santaId].possiblePresentees = presentees
     }
 
-    /**
-     * 
-     * @param min 
-     * @param max 
-     * @returns A number between min and max including both
-     */
     getRandomInt = (min: number, max: number) => {
         // Increase that max value is also included
         max = max + 1

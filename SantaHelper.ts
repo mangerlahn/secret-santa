@@ -1,15 +1,14 @@
 import { Santa } from "./types"
-import { v4 as uuid } from 'uuid';
 
-const createSanta = (name: string , excludedPresentees: Array<string>): Santa => {
+const createSanta = (name: string, excludedPresentees: Array<string>): Santa => {
     //TODO: use uuid
     return {
         name,
-        id: name.toLowerCase().replace(/\s/g, ""),
+        id: Math.round(Math.random() * 100000).toString(),
         excludedPresentees,
         possiblePresentees: [],
         chosenPresenteeId: ''
     }
 }
 
-export {createSanta}
+export { createSanta }
