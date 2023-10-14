@@ -35,6 +35,7 @@ export class SantaFinder {
         // Choose random cycle
         const randomIndex = this.getRandomInt(0, this.possibleCycles.length)
         const chosenCycle = this.possibleCycles[randomIndex]
+        if (!chosenCycle) throw 'UNDEFINED-CIRCLE'
 
         chosenCycle.forEach((id, i) => {
             const presenteeId = (i + 1) === chosenCycle.length ? chosenCycle[0] : chosenCycle[i + 1]
@@ -46,11 +47,11 @@ export class SantaFinder {
     getRandomSantas() {
         this.chooseRandomCycle()
 
-        const santas: {[key: string]: string} = {}
+        const santas: { [key: string]: string } = {}
         this.getSantaIds().forEach(santaId => {
             const presenteeId = this.getSantaById(santaId).chosenPresenteeId
             santas[this.getSantaById(santaId).name] = this.getSantaById(presenteeId).name
-            })
+        })
         return santas
     }
 
