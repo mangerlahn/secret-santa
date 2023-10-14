@@ -140,7 +140,7 @@ const shareLink = async (name: string, url: string) => {
     try {
         await navigator.share({
             title: 'Wichteln',
-            text: 'Klicke auf den Link und erfahre für wen du dieses Jahr wichtelst',
+            text: url,
             url,
         })
         return
