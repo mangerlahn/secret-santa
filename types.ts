@@ -6,4 +6,9 @@ type Santa = {
     chosenPresenteeId: string
 }
 
-export {Santa}
+type SantaNode = {
+    id: string,
+    possiblePresentees: Array<string>
+}
+
+export {Santa, SantaNode}
