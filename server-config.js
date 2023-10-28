@@ -1,3 +1,3 @@
 export default {
-    serverURL: 'http://schreiber.duckdns.org:4000'
+    serverURL: '85.215.58.232:4000'
 }
