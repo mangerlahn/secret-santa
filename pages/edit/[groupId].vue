@@ -1,5 +1,5 @@
 <template>
-    <div class="h-[calc(100dvh)] w-screen bg-black text-white flex flex-col gap-16 items-center p-4">
+    <div class="min-h-[calc(100dvh)] w-screen bg-black text-white flex flex-col gap-16 items-center p-4">
         <div v-if="!areLinksVisible" class="h-full w-full max-w-4xl flex flex-col gap-16 items-center justify-center">
             <div class="text-2xl w-full">Group-Id: {{ groupId }}</div>
             <form @submit="(event) => addSanta(event)" v-if="!areLinksReady" class="flex gap-2 h-10 w-full">
