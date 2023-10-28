@@ -72,7 +72,7 @@ let newSantaName = ref('')
 const findSantas = () => {
     const SF = new SantaFinder(players.value)
     try {
-        santas.value = SF.getRandomSantas()
+        santas.value = SF.getSantas()
         createGroup()
     } catch (error) {
         switch (error) {

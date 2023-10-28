@@ -1,110 +1,108 @@
 import { Santa } from "./types"
 
 export class SantaFinder {
-    santas: { [key: string]: Santa }
-    availablePresentees: { [key: string]: Santa }
-    possibleCycles: Array<Array<string>> = []
+    santas: Array<Santa>
+
+    availableSantaIds: Array<string>
+    availablePresenteeIds: Array<string>
 
     constructor(players: Array<Santa>) {
-        this.santas = {}
-        this.availablePresentees = {}
-
-        players.forEach(player => {
-            this.santas[player.id] = player
-            this.availablePresentees[player.id] = player
-        })
+        this.santas = players
+        this.availableSantaIds = players.map((player) => player.id )
+        this.availablePresenteeIds = this.availableSantaIds
 
         this.findSantas()
     }
 
     private findSantas() {
         // Find our possible presentees for each santa
-        this.getSantaIds().forEach((santaId) => {
-            const possiblePresentees = this.getPossiblePresenteesById(santaId)
-            this.setPossiblePresentees(santaId, possiblePresentees)
+        this.santas.forEach((santa) => {
+            const possiblePresentees = this.getPossiblePresenteesById(santa.id)
+            santa.possiblePresentees = possiblePresentees
         })
 
-        /* Create possible santa graphs (only full cycles)
-            TODO: Implement multiple cycles? e.g. (a-b-c) (d-e-f) instead of (a-b-c-d-e-f)
-         */
-        const firstSantaId = this.getSantaIds()[0]
-        this.findNextSanta(firstSantaId, this.getSantaById(firstSantaId).possiblePresentees, [])
+        // Go through santas until everyone has a presentee
+        let currentSanta = this.getNextSanta()
+		while (currentSanta) {		
+			this.availableSantaIds = this.availableSantaIds.filter((santa) => santa != currentSanta?.santa )
+			this.availablePresenteeIds = this.availablePresenteeIds.filter((santa) => santa != currentSanta?.presentee )
+            this.setChosenPresentee(currentSanta.santa, currentSanta.presentee)
+
+            currentSanta = this.getNextSanta()
+		}
+		
+        // Validity check
+        if (this.availableSantaIds.length || this.availablePresenteeIds.length) {
+            throw 'UNDEFINED-CIRCLE'
+        }
     }
 
-    chooseRandomCycle() {
-        // Choose random cycle
-        const randomIndex = this.getRandomInt(0, this.possibleCycles.length)
-        const chosenCycle = this.possibleCycles[randomIndex]
-        if (!chosenCycle) throw 'UNDEFINED-CIRCLE'
+    private getNextSanta() {
+        // Find all santas that still need an presentee
+        let availableSantaNodes = this.santas
+            .filter(santa => { return this.availableSantaIds.includes(santa.id)})
+            .map((santa) => {
+                const presentees = santa.possiblePresentees.filter((presentee: string) => { return this.availablePresenteeIds.includes(presentee) })
+                return { id: santa.id, possiblePresentees: presentees }
+            })
+        
+        // We are done
+        if (availableSantaNodes.length === 0) {
+            return null
+        }
+        
+        // Find presentees who should be prioritized because few santas apply
+        const presenteeCounts = availableSantaNodes.flatMap((node) => node.possiblePresentees )
+            .reduce((acc, curr) => {
+                return acc[curr] ? ++acc[curr] : acc[curr] = 1, acc
+            }, {} as {[id: string]: number; })
+        const presentees = Object.entries(presenteeCounts)
+            .sort((p1, p2) => { return p1[1] - p2[1] })
+            .map(([presentee]) => presentee)
+    
+        // Find santas with least amount of possible presentees
+        availableSantaNodes.sort((node1, node2) => {
+            return node1.possiblePresentees.length - node2.possiblePresentees.length
+        })        
+        const minPresenteeCount = Math.min(...availableSantaNodes.map((node) => node.possiblePresentees.length))
+        availableSantaNodes = availableSantaNodes.filter((node) => node.possiblePresentees.length === minPresenteeCount)
 
-        chosenCycle.forEach((id, i) => {
-            const presenteeId = (i + 1) === chosenCycle.length ? chosenCycle[0] : chosenCycle[i + 1]
-            this.setChosenPresentee(id, presenteeId)
-        })
-        console.log(chosenCycle)
+        // Choose random santa and presentee (within priority constraints)
+        const random = Math.floor(Math.random() * availableSantaNodes.length);
+        const node = availableSantaNodes[random]
+        const presentee = presentees.find((presentee) => { return node.possiblePresentees.includes(presentee) })
+        if (!presentee) throw 'UNDEFINED-CIRCLE'
+
+        return {santa: node.id, presentee: presentee}
     }
 
-    getRandomSantas() {
-        this.chooseRandomCycle()
-
+    getSantas() {
         const santas: { [key: string]: { name: string, presenteeName: string } } = {}
-        this.getSantaIds().forEach(santaId => {
-            const presenteeId = this.getSantaById(santaId).chosenPresenteeId
-            santas[santaId] = {
-                name: this.getSantaById(presenteeId).name,
-                presenteeName: this.getSantaById(santaId).name
+        this.santas.forEach(santa => {
+            const presenteeId = santa.chosenPresenteeId
+            santas[santa.id] = {
+                name: santa.name,
+                presenteeName: this.getSantaById(presenteeId).name
             }
         })
+
         return santas
     }
 
-    private findNextSanta(nodeId: string, edges: Array<string>, path: Array<string>) {
-        const currentPath = [...path]
-        currentPath.push(nodeId)
-
-        if (currentPath.length === this.getSantaIds().length) {
-            // Does endNode match firstNode
-            if (this.santas[nodeId].possiblePresentees.includes(currentPath[0])) {
-                this.possibleCycles.push(currentPath)
-            }
-            return
-        }
-
-        edges.forEach(nextNodeId => {
-            if (!currentPath.includes(nextNodeId)) {
-                this.findNextSanta(nextNodeId, this.santas[nextNodeId].possiblePresentees, currentPath)
-            }
-        })
-    }
-
     private getPossiblePresenteesById(santaId: string) {
-        return this.getSantaIds().filter(presenteeId => {
+        return this.santas.filter(presentee => {
             const currentSanta = this.getSantaById(santaId)
-            const isPresenteeExcluded = currentSanta.excludedPresentees.includes(presenteeId)
-            const isOtherPerson = santaId != presenteeId
+            const isPresenteeExcluded = currentSanta.excludedPresentees.includes(presentee.id)
+            const isOtherPerson = santaId != presentee.id
             return !isPresenteeExcluded && isOtherPerson
-        })
-    }
-
-    getSantaIds() {
-        return Object.keys(this.santas)
+        }).map((santa) => santa.id)
     }
 
     getSantaById(id: string) {
-        return this.santas[id]
+        return this.santas.find((santa) => santa.id === id ) as Santa
     }
 
     setChosenPresentee(santaId: string, presenteeId: string) {
-        return this.santas[santaId].chosenPresenteeId = presenteeId
-    }
-
-    private setPossiblePresentees(santaId: string, presentees: string[]) {
-        return this.santas[santaId].possiblePresentees = presentees
-    }
-
-    getRandomInt = (min: number, max: number) => {
-        // Increase that max value is also included
-        max = max + 1
-        return Math.floor(Math.random() * (max - min) + min)
+        return this.getSantaById(santaId).chosenPresenteeId = presenteeId
     }
 }
