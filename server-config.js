@@ -1,3 +1,3 @@
 export default {
-    serverURL: 'https://santa.max.codes'
+    serverURL: 'http://schreiber.duckdns.org:4000/'
 }
