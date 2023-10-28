@@ -1,3 +1,3 @@
 export default {
-    serverURL: 'https://secret-santa-server-cphm.onrender.com'
+    serverURL: 'https://santa.max.codes'
 }
