@@ -1,3 +1,3 @@
 export default {
-    serverURL: 'https://secret-santas.duckdns.org:4000'
+    serverURL: 'https://santa.max.codes:3000'
 }

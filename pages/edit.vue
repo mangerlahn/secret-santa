@@ -1,7 +1,6 @@
 <template>
     <div class="min-h-[calc(100dvh)] w-screen bg-black text-white flex flex-col gap-16 items-center p-4">
         <div v-if="!areLinksVisible" class="h-full w-full max-w-4xl flex flex-col gap-16 items-center justify-center">
-            <div class="text-2xl w-full">Group-Id: {{ groupId }}</div>
             <form @submit="(event) => addSanta(event)" v-if="!areLinksReady" class="flex gap-2 h-10 w-full">
                 <input type="text" v-model="newSantaName"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 max-w-xs"
@@ -55,13 +54,11 @@
 <script lang="ts" setup>
 import { Ref } from "nuxt/dist/app/compat/capi";
 import { Santa } from "~~/types";
-import { computed, ref } from "vue";
+import { ref } from "vue";
+import { Buffer } from "buffer"
 import { SantaFinder } from '@/SantaFinder'
 import { createSanta } from '@/SantaHelper'
-import serverConfig from "@/server-config";
-const route = useRoute()
 
-const groupId = ref(route.params.groupId)
 const players: Ref<Santa[]> = ref([]);
 
 const santas = ref()
@@ -88,17 +85,17 @@ const findSantas = () => {
 const generatedLinks = ref(new Map<string, string>)
 
 const createGroup = () => {
-    const requestOptions = {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(santas.value)
-    };
-    fetch(`${serverConfig.serverURL}/createGroup/${groupId.value}`, requestOptions).then(res => areLinksReady.value = true)
-
     Object.keys(santas.value).forEach(santaId => {
         const name = santas.value[santaId].name
-        generatedLinks.value.set(name, `http://${window.location.host}/${groupId.value}/${santaId}`)
+        const presenteeName = santas.value[santaId].presenteeName
+        // const presentee = 
+        const json = JSON.stringify(Object.fromEntries([["name", name], ["presenteeName", presenteeName]]))
+        const base64String = Buffer.from(json, 'binary').toString('base64')
+
+        generatedLinks.value.set(name, `https://${window.location.host}/santas/${base64String}`)
     })
+
+    areLinksReady.value = true
 }
 
 const showLinks = () => {

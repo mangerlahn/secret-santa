@@ -7,4 +7,5 @@ export default defineNuxtConfig({
           autoprefixer: {},
         },
       },
+      experimental: { appManifest: false }
 })
