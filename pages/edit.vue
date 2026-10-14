@@ -52,9 +52,8 @@
 </template>
 
 <script lang="ts" setup>
-import { Ref } from "nuxt/dist/app/compat/capi";
 import { Santa } from "~~/types";
-import { ref } from "vue";
+import { ref, type Ref } from "vue";
 import { Buffer } from "buffer"
 import { SantaFinder } from '@/SantaFinder'
 import { createSanta } from '@/SantaHelper'
