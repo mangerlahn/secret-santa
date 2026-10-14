@@ -152,7 +152,7 @@ interface Data {
     presenteeName: string;
 }
 
-const rawJson = Buffer.from(base64String.value, 'base64').toString('binary')
+const rawJson = Buffer.from(base64String.value, 'base64').toString('utf8')
 console.log(rawJson);
 
 var json: Data

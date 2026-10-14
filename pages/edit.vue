@@ -90,7 +90,11 @@ const createGroup = () => {
         const presenteeName = santas.value[santaId].presenteeName
         // const presentee = 
         const json = JSON.stringify(Object.fromEntries([["name", name], ["presenteeName", presenteeName]]))
-        const base64String = Buffer.from(json, 'binary').toString('base64')
+        // URL-safe base64 so a "/" doesn't split the route path
+        const base64String = Buffer.from(json, 'utf8').toString('base64')
+            .replace(/\+/g, '-')
+            .replace(/\//g, '_')
+            .replace(/=+$/, '')
 
         generatedLinks.value.set(name, `https://${window.location.host}/santas/${base64String}`)
     })
